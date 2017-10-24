@@ -1,0 +1,32 @@
+OBJ=obj
+BIN=bin
+LIB=lib
+SRC=src
+INC=include
+
+all: bin/principal
+
+clean:
+	rm $(OBJ)/*.o
+	rm $(LIB)/*.a
+
+mrproper: clean
+	rm $(BIN)/principal
+
+$(OBJ)/punto.o: $(SRC)/punto.cpp $(INC)/punto.h
+	g++ -c -o $(OBJ)/punto.o -I$(INC) $(SRC)/punto.cpp
+	
+$(OBJ)/circulo.o: $(SRC)/circulo.cpp $(INC)/circulo.h $(INC)/punto.h
+	g++ -c -o $(OBJ)/circulo.o -I$(INC) $(SRC)/circulo.cpp
+
+$(OBJ)/utilidades.o: $(SRC)/utilidades.cpp $(INC)/punto.h $(INC)/circulo.h
+	g++ -c -o $(OBJ)/utilidades.o -I$(INC) $(SRC)/utilidades.cpp
+
+$(LIB)/$(LIB)formas.a: $(OBJ)/punto.o $(OBJ)/circulo.o $(OBJ)/utilidades.o
+	ar rsv $(LIB)/$(LIB)formas.a $(OBJ)/punto.o $(OBJ)/circulo.o $(OBJ)/utilidades.o
+
+$(OBJ)/principal.o: $(SRC)/principal.cpp $(INC)/punto.h $(INC)/circulo.h $(INC)/utilidades.h
+	g++ -c -o $(OBJ)/principal.o -I$(INC) $(SRC)/principal.cpp
+
+$(BIN)/principal: $(OBJ)/principal.o $(LIB)/$(LIB)formas.a
+	g++ -L$(LIB)/ -o $(BIN)/principal $(OBJ)/principal.o -lformas
